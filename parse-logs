@@ -107,4 +107,13 @@ while (<$main>) {
 
 warn scalar(@records), " records found.\n";
 
+print "concurrency,rps,bandwidth,failed\n";
+for my $r (@records) {
+    if ($r->{failed}) {
+        warn "WARNING: record with concurrency level $r->{con} skipped: $r->{failed} failed.\n";
+        next;
+    }
+
+    print "$r->{con},$r->{rps},$r->{band},$r->{failed}\n";
+}
 

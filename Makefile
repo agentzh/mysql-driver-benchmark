@@ -2,7 +2,9 @@ today=$(shell date +"%m%d")
 now=$(shell date +"%H%M")
 name=logs-$(today)-$(now)
 
-.PHONY: all clean bench-slow check pack start-drizzle start-drizzle-lua start-lua timewait
+.PHONY: all clean bench-slow check pack \
+	start-drizzle start-drizzle-lua start-lua timewait \
+	upload
 
 all: ;
 
@@ -44,4 +46,7 @@ start-lua:
 
 timewait:
 	nice netstat -nt|grep :8080|grep TIME_WAIT|wc -l
+
+upload:
+	cd /tmp/ && rsync -crv drizzle-slow-micro-lowess.png drizzle-slow-micro.png agentzh.org:~/www/agentzh/misc/nginx/bench/
 
