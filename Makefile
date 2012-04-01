@@ -11,7 +11,7 @@ clean:
 
 bench:
 	if [ -d logs-old/ ]; then rm -rf logs-old; fi
-	mv logs logs-old
+	if [ -d logs/ ]; then mv logs logs-old; fi
 	./bench-slow
 
 pack:
