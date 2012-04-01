@@ -1,7 +1,7 @@
 #!/bin/bash
 
 nginx_bin=/opt/openresty-drizzle-lua/nginx/sbin/nginx
-ulimit -n 10240
+
 if [ -f logs/nginx.pid ]; then
     pid=`cat logs/nginx.pid`
     if [ -n "$pid" ]; then
@@ -12,5 +12,6 @@ if [ -f logs/nginx.pid ]; then
         sleep 0.3
     fi
 fi
+
 $nginx_bin -p `pwd`/ -c conf/nginx.conf
 

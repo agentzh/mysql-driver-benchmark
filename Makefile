@@ -21,4 +21,12 @@ check:
 	@echo "=========== API ============="
 	curl -i localhost:8080/t
 
+start-drizzle:
+	cd ngx-drizzle-test && ./start
+
+start-drizzle-lua:
+	cd ngx-drizzle-lua-test && ./start
+
+start-lua:
+	cd ngx-lua-test && ./start
 
