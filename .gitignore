@@ -3,3 +3,7 @@
 *.tar.gz
 logs/
 logs-old/
+*.swo
+.*
+*.csv
+*.png

@@ -4,12 +4,12 @@ name=logs-$(today)-$(now)
 
 .PHONY: all clean bench-slow check pack \
 	start-drizzle start-drizzle-lua start-lua timewait \
-	upload
+	upload-slow gen-slow
 
 all: ;
 
 clean:
-	rm -rf logs/
+	rm -rf *.png *.csv
 
 bench-slow:
 	if [ -d logs-old/ ]; then rm -rf logs-old; fi
@@ -47,6 +47,10 @@ start-lua:
 timewait:
 	nice netstat -nt|grep :8080|grep TIME_WAIT|wc -l
 
-upload:
-	cd /tmp/ && rsync -crv drizzle-slow-micro-lowess.png drizzle-slow-micro.png agentzh.org:~/www/agentzh/misc/nginx/bench/
+upload-slow:
+	rsync -crv drizzle-slow-micro-lowess.png drizzle-slow-micro.png agentzh.org:~/www/agentzh/misc/nginx/bench/
+
+gen-slow:
+	./parse-logs logs logs/slow.log > slow.csv || exit 1
+	R --no-save --slave < plot-slow.r --no-save -q || exit 1
 
