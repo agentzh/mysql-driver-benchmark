@@ -2,17 +2,18 @@ today=$(shell date +"%m%d")
 now=$(shell date +"%H%M")
 name=logs-$(today)-$(now)
 
-.PHONY: all clean bench check pack start-drizzle start-drizzle-lua start-lua
+.PHONY: all clean bench-slow check pack start-drizzle start-drizzle-lua start-lua
 
 all: ;
 
 clean:
 	rm -rf logs/
 
-bench:
+bench-slow:
 	if [ -d logs-old/ ]; then rm -rf logs-old; fi
 	if [ -d logs/ ]; then mv logs logs-old; fi
-	./bench-slow
+	mkdir -p logs
+	./bench-slow > logs/slow.log 2>&1
 
 pack:
 	tar --exclude='*~' --exclude='*.swp' --exclude='*.swo' -czvf $(name).tar.gz logs
