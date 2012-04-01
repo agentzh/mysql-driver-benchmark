@@ -34,13 +34,11 @@ while [ $c -le 1000 ]; do
     n=$((c * 5))
     total=$((total + n))
 
-    if [ $total -ge 20000 ]; then
-        echo sleep 15
-        sleep 15
+    if [ $total -ge 40000 ]; then
+        sleep 10
         total=0
     else
-        echo sleep 1
-        sleep 1
+        sleep 0.5
     fi
 
     echo ===
