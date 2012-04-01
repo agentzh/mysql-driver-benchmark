@@ -16,7 +16,8 @@ bench-slow:
 	./bench-slow > logs/slow.log 2>&1
 
 pack:
-	tar --exclude='*~' --exclude='*.swp' --exclude='*.swo' -czvf $(name).tar.gz logs
+	mv logs $(name)
+	tar --exclude='*~' --exclude='*.swp' --exclude='*.swo' -czvf $(name).tar.gz $(name)
 	ls -lh $(name).tar.gz
 
 check:

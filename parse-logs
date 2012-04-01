@@ -1,0 +1,70 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+my $work_dir = shift or
+    die "no working directory specified";
+
+my $main_log_file = shift or
+    die "no main log file specified";
+
+open my $main, $main_log_file or
+    die "failed to open $main_log_file for reading: $!\n";
+
+my @records;
+my $record;
+my $expect;
+while (<$main>) {
+    if (/^===$/) {
+        $expect = 'time';
+        $record = {};
+        push @records, $record;
+        last;
+    }
+}
+
+if (!$record) {
+    die "No log data found";
+}
+
+while (<$main>) {
+    if (/^===$/) {
+        if ($record) {
+            if (!$record->{BEGIN}) {
+                die "BEGIN time not found";
+            }
+
+            if (!$record->{END}) {
+                die "END time not found";
+            }
+        }
+
+        $record = {};
+        push @records, $record;
+        next;
+    }
+
+    if (/^(BEGIN|END) (\d{4}-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}))$/) {
+        my ($type, $time, $month, $day, $h, $m, $s) = ($1, $2, $3, $4, $5, $6, $7);
+
+        if ($record->{$type}) {
+            die "duplicate $type timestamp: $.";
+        }
+
+        my $tm = {};
+        $record->{$type} = $tm;
+
+        my $suffix = "$month$day-$h$m";
+        $tm->{suffix} = $suffix;
+        warn "type $type, suffix $suffix, time $time, sec $s\n";
+
+        $tm->{sec} = $s;
+        $tm->{time} = $time;
+        next;
+    }
+
+}
+
+warn scalar(@records), " records found.\n";
+
