@@ -14,11 +14,11 @@ pack:
 	ls -lh $(name).tar.gz
 
 check:
-	echo "=========== MySQL ==========="
+	@echo "=========== MySQL ==========="
 	ps aux|grep mysqld|grep -v safe|grep -v grep
-	echo "=========== Nginx ==========="
+	@echo "=========== Nginx ==========="
 	ps aux|grep nginx|grep -v grep|grep -v grep
-	echo "=========== API ============="
+	@echo "=========== API ============="
 	curl -i localhost:8080/t
 
 
