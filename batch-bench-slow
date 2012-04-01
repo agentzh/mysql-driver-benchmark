@@ -44,9 +44,9 @@ while [ $c -le 1000 ]; do
     fi
 
     echo ===
-    echo >>BEGIN `date +"%Y-%m-%d %H:%M:%S"`
+    echo BEGIN `date +"%Y-%m-%d %H:%M:%S"`
     weighttp -k -c$c -n$n $uri
-    echo >>END `date +"%Y-%m-%d %H:%M:%S"`
+    echo END `date +"%Y-%m-%d %H:%M:%S"`
     c=$((c + 20))
 done
 
