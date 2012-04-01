@@ -6,6 +6,10 @@ use warnings;
 my $work_dir = shift or
     die "no working directory specified";
 
+if (!-d $work_dir) {
+    die "working directory $work_dir not found";
+}
+
 my $main_log_file = shift or
     die "no main log file specified";
 
@@ -107,13 +111,128 @@ while (<$main>) {
 
 warn scalar(@records), " records found.\n";
 
-print "concurrency,rps,bandwidth,failed\n";
+if ($work_dir =~ m{/$}) {
+    chop $work_dir;
+}
+
+my @nginx_files = sort glob "$work_dir/nginx-*.[0-9]*-[0-9]*";
+
+my $begin_suffix = $records[0]{BEGIN}{suffix};
+my $end_suffix = $records[-1]{BEGIN}{suffix};
+
+warn "$begin_suffix <=> $end_suffix\n";
+
+@nginx_files = grep {
+        if (/\.([^.]+)$/) {
+            my $s = $1;
+            #warn "testing suffix $s\n";
+            $s ge $begin_suffix && $s le $end_suffix
+        } else {
+            die;
+        }
+    } @nginx_files;
+
+warn "nginx files: @nginx_files\n";
+
+my @nginx_stats;
+my $stat;
+for my $file (@nginx_files) {
+    if ($file =~ /\.([^.]+)$/) {
+        my $suffix = $1;
+
+        open my $in, $file or
+            die "Cannot open $file for reading: $!\n";
+
+        while (<$in>) {
+            if (/^===$/) {
+                if ($stat) {
+                    if (!defined $stat->{rss} && !defined $stat->{vsz}
+                        && !defined $stat->{cpu})
+                    {
+                        warn "WARNING: abandoned $stat->{time}\n";
+                        pop @nginx_stats;
+                    }
+                }
+
+                $stat = {};
+                push @nginx_stats, $stat;
+
+                next;
+            }
+
+            if (/^TIME (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})$/) {
+                my $time = $1;
+
+                #warn "time: $time\n";
+                $stat->{time} = $time;
+                next;
+            }
+
+            if (/^\S+ \s+ \d+ \s+ (\d+(?:\.\d+)?) \s+ \d+(?:\.\d+)? \s+
+                    (\d+) \s+ (\d+) \s+ .*? nginx:\ worker\ process /x)
+            {
+                my ($cpu, $vsz, $rss) = ($1, $2, $3);
+                #warn "CPU: $cpu, VSZ: $vsz, RSS: $rss\n";
+                $stat->{cpu} = $cpu;
+                $stat->{vsz} = $vsz;
+                $stat->{rss} = $rss;
+            }
+        }
+
+        close $in;
+        #warn "suffix: $suffix";
+
+    } else {
+        die;
+    }
+}
+
+#warn "nginx files: @nginx_files\n";
+
+sub max {
+    my ($a, $b) = @_;
+    if (!defined $a) {
+        return $b;
+    }
+
+    if (!defined $b) {
+        return $a;
+    }
+
+    return $a > $b ? $a : $b;
+}
+
+for my $r (@records) {
+    my $begin = $r->{BEGIN}{time};
+    my $end = $r->{END}{time};
+
+    #warn "begin $begin, end $end\n";
+    for my $stat (@nginx_stats) {
+        if ($stat->{time} le $begin) {
+            next;
+        }
+
+        if ($stat->{time} ge $end) {
+            last;
+        }
+
+        $r->{ngx_rss} = max($r->{ngx_rss}, $stat->{rss}/1000);
+        $r->{ngx_vsz} = max($r->{ngx_vsz}, $stat->{vsz}/1000);
+        $r->{ngx_cpu} = max($r->{ngx_cpu}, $stat->{cpu});
+    }
+}
+
+print "concurrency,rps,bandwidth,nginx_cpu,nginx_vsz,nginx_rss\n";
 for my $r (@records) {
     if ($r->{failed}) {
-        warn "WARNING: record with concurrency level $r->{con} skipped: $r->{failed} failed.\n";
+        warn "WARNING: record skipped: concurrency $r->{con}: $r->{failed} failed.\n";
         next;
     }
 
-    print "$r->{con},$r->{rps},$r->{band},$r->{failed}\n";
+    my $begin = $r->{BEGIN};
+    my $end = $r->{END};
+
+    print "$r->{con},$r->{rps},$r->{band},",
+        "$r->{ngx_cpu},$r->{ngx_vsz},$r->{ngx_rss}\n";
 }
 
