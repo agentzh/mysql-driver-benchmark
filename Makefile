@@ -19,13 +19,13 @@ pack:
 
 check:
 	@echo "=========== MySQL ==========="
-	ps aux|grep mysqld|grep -v safe|grep -v grep
+	-ps aux|grep mysqld|grep -v safe|grep -v grep
 	@echo "=========== Nginx ==========="
-	ps aux|grep nginx|grep -v grep
+	-ps aux|grep nginx|grep -v grep
 	@echo "=========== Watcher ========="
-	ps aux|grep watch-|grep -v grep
+	-ps aux|grep watch-|grep -v grep
 	@echo "=========== API ============="
-	curl localhost:8080/t
+	-curl localhost:8080/t
 
 start-drizzle:
 	cd ngx-drizzle-test && ./start
