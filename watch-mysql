@@ -1,0 +1,26 @@
+#!/bin/bash
+
+here=`hostname -s`
+today=`date +"%m%d"`
+now=`date +"%H%M"`
+inter=1
+
+Filout="mysql-$here.$today-$now"
+echo $Filout
+
+while [ 1 = 1 ]; do
+
+    (echo ===; date; free -m|grep '[0-9]'; \
+          ps -eLf|grep mysqld|grep -v grep|grep -v safe|wc -l; \
+          ps aux|grep mysqld|grep -v grep|grep -v safe) >> $Filout
+
+    sleep $inter
+
+    newmin=`date +"%H%M"`
+    if [ "$now" != "$newmin" ]; then
+        now=$newmin
+        Filout="mysql-$here.$today-$now"
+        echo $Filout
+    fi
+done
+

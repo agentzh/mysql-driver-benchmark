@@ -1,0 +1,25 @@
+#!/bin/bash
+
+here=`hostname -s`
+today=`date +"%m%d"`
+now=`date +"%H%M"`
+inter=1
+
+Filout="nginx-$here.$today-$now"
+echo $Filout
+
+while [ 1 = 1 ]; do
+
+    (echo ===; date; free -m|grep '[0-9]'; \
+          ps aux|grep nginx|grep -v grep|grep -v master|grep -v 'watch-nginx') >> $Filout
+
+    sleep $inter
+
+    newmin=`date +"%H%M"`
+    if [ "$now" != "$newmin" ]; then
+        now=$newmin
+        Filout="nginx-$here.$today-$now"
+        echo $Filout
+    fi
+done
+

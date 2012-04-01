@@ -1,0 +1,59 @@
+#!/bin/bash
+
+uri=http://127.0.0.1:8080/t
+curl -s -i $uri
+
+pids=
+
+function cleanup {
+    kill $pids
+    sleep 1
+    kill -9 $pids
+    exit
+}
+
+trap cleanup SIGHUP SIGINT SIGTERM
+
+./watch-mysql &
+pids="$pids $!"
+
+
+./watch-nginx &
+pids="$pids $!"
+
+./watch-weighttp &
+pids="$pids $!"
+
+c=20
+total=0
+while [ $c -le 1000 ]; do
+    n=$((c * 5))
+    total=$((total + n))
+
+    if [ $total -ge 20000 ]; then
+        echo sleep 15
+        sleep 15
+        total=0
+    else
+        echo sleep 1
+        sleep 1
+    fi
+
+    echo ===
+    date
+    weighttp -k -c$c -n$n $uri
+    c=$((c + 20))
+done
+
+sleep 1
+
+echo killing $pids
+kill $pids
+
+sleep 1
+
+echo killing $pids with force
+kill -9 $pids
+
+ps aux|grep watch|grep -v grep
+

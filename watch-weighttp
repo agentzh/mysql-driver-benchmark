@@ -1,0 +1,25 @@
+#!/bin/bash
+
+here=`hostname -s`
+today=`date +"%m%d"`
+now=`date +"%H%M"`
+inter=1
+
+Filout="weighttp-$here.$today-$now"
+echo $Filout
+
+while [ 1 = 1 ]; do
+
+    (echo ===; date; free -m|grep '[0-9]'; \
+          ps aux|grep weighttp|grep -v grep|grep -v watch-weighttp) >> $Filout
+
+    sleep $inter
+
+    newmin=`date +"%H%M"`
+    if [ "$now" != "$newmin" ]; then
+        now=$newmin
+        Filout="weighttp-$here.$today-$now"
+        echo $Filout
+    fi
+done
+
