@@ -28,6 +28,8 @@ check:
 	@echo "=========== API ============="
 	-curl localhost:8080/t
 	@echo
+	@echo "=========== TIME_WAIT ========"
+	-netstat -nt|grep :8080|grep TIME_WAIT|wc -l
 
 start-drizzle:
 	cd ngx-drizzle-test && ./start
