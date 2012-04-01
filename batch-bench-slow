@@ -3,6 +3,10 @@
 uri=http://127.0.0.1:8080/t
 curl -s -i $uri
 
+if [ !-d logs/ ]; then
+    mkdir -p logs || exit 1
+fi
+
 pids=
 
 function cleanup {
@@ -40,8 +44,9 @@ while [ $c -le 1000 ]; do
     fi
 
     echo ===
-    date
+    echo >>BEGIN `date +"%Y-%m-%d %H:%M:%S"`
     weighttp -k -c$c -n$n $uri
+    echo >>END `date +"%Y-%m-%d %H:%M:%S"`
     c=$((c + 20))
 done
 

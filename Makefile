@@ -1,15 +1,15 @@
 today=$(shell date +"%m%d")
 now=$(shell date +"%H%M")
-name=bench-$(today)-$(now)
+name=logs-$(today)-$(now)
 
 .PHONY: all clean
 
 all: ;
 
 clean:
-	rm *-domU-*.* *.log
+	rm -rf logs/
 
-dist:
-	cd .. && tar --exclude='*~' --exclude='*.swp' --exclude='*.swo' -czvf $(name).tar.gz bench
-	ls -lh ../$(name).tar.gz
+pack:
+	tar --exclude='*~' --exclude='*.swp' --exclude='*.swo' -czvf $(name).tar.gz logs
+	ls -lh $(name).tar.gz
 

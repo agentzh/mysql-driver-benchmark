@@ -5,12 +5,18 @@ today=`date +"%m%d"`
 now=`date +"%H%M"`
 inter=1
 
+if [ ! -d logs/ ]; then
+    mkdir -p logs || exit 1
+fi
+
+cd logs/ || exit 1
+
 Filout="mysql-$here.$today-$now"
 echo $Filout
 
 while [ 1 = 1 ]; do
 
-    (echo ===; date; free -m|grep '[0-9]'; \
+    (echo ===; echo TIME `date +"%Y-%m-%d %H:%M:%S"`; free -m|grep '[0-9]'; \
           ps -eLf|grep mysqld|grep -v grep|grep -v safe|wc -l; \
           ps aux|grep mysqld|grep -v grep|grep -v safe) >> $Filout
 
