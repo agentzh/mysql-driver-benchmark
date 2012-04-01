@@ -2,7 +2,7 @@ today=$(shell date +"%m%d")
 now=$(shell date +"%H%M")
 name=logs-$(today)-$(now)
 
-.PHONY: all clean bench-slow check pack start-drizzle start-drizzle-lua start-lua
+.PHONY: all clean bench-slow check pack start-drizzle start-drizzle-lua start-lua timewait
 
 all: ;
 
@@ -40,4 +40,7 @@ start-drizzle-lua:
 
 start-lua:
 	cd ngx-lua-test && ./start
+
+timewait:
+	netstat -nt|grep :8080|grep TIME_WAIT|wc -l
 
