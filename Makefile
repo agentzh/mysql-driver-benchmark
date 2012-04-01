@@ -12,6 +12,7 @@ clean:
 bench:
 	if [ -d logs-old/ ]; then rm -rf logs-old; fi
 	mv logs logs-old
+	./bench-slow
 
 pack:
 	tar --exclude='*~' --exclude='*.swp' --exclude='*.swo' -czvf $(name).tar.gz logs
