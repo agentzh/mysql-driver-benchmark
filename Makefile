@@ -26,6 +26,7 @@ check:
 	-ps aux|grep watch-|grep -v grep
 	@echo "=========== API ============="
 	-curl localhost:8080/t
+	@echo
 
 start-drizzle:
 	cd ngx-drizzle-test && ./start
