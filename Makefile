@@ -17,9 +17,11 @@ check:
 	@echo "=========== MySQL ==========="
 	ps aux|grep mysqld|grep -v safe|grep -v grep
 	@echo "=========== Nginx ==========="
-	ps aux|grep nginx|grep -v grep|grep -v grep
+	ps aux|grep nginx|grep -v grep
+	@echo "=========== Watcher ========="
+	ps aux|grep watch-|grep -v grep
 	@echo "=========== API ============="
-	curl -i localhost:8080/t
+	curl localhost:8080/t
 
 start-drizzle:
 	cd ngx-drizzle-test && ./start

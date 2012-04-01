@@ -3,7 +3,7 @@
 uri=http://127.0.0.1:8080/t
 curl -s -i $uri
 
-if [ !-d logs/ ]; then
+if [ ! -d logs/ ]; then
     mkdir -p logs || exit 1
 fi
 
