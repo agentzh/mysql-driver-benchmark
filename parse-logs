@@ -18,7 +18,7 @@ my $expect;
 while (<$main>) {
     if (/^===$/) {
         $expect = 'time';
-        $record = {};
+        $record = { line => $. };
         push @records, $record;
         last;
     }
@@ -31,12 +31,30 @@ if (!$record) {
 while (<$main>) {
     if (/^===$/) {
         if ($record) {
+            my $ln = $record->{line};
+
             if (!$record->{BEGIN}) {
-                die "BEGIN time not found";
+                die "line $ln: BEGIN time not found";
             }
 
             if (!$record->{END}) {
-                die "END time not found";
+                die "line $ln: END time not found";
+            }
+
+            if (!$record->{con}) {
+                die "line $ln: concurrency not found";
+            }
+
+            if (!defined $record->{failed}) {
+                die "line $ln: failed requests not found";
+            }
+
+            if (!defined $record->{rps}) {
+                die "line $ln: rps not found";
+            }
+
+            if (!defined $record->{band}) {
+                die "line $ln: bandwidth not found";
             }
         }
 
@@ -57,14 +75,36 @@ while (<$main>) {
 
         my $suffix = "$month$day-$h$m";
         $tm->{suffix} = $suffix;
-        warn "type $type, suffix $suffix, time $time, sec $s\n";
+        #warn "type $type, suffix $suffix, time $time, sec $s\n";
 
         $tm->{sec} = $s;
         $tm->{time} = $time;
         next;
     }
 
+    if (/^spawning thread \#\d+: (\d+) concurrent requests/) {
+        my ($con) = $1;
+        $record->{con} += $con;
+        #warn "found concurrency: $con\n";
+        next;
+    }
+
+    if (/^finished in .*?, (\d+) req\/s, (\d+) kbyte\/s$/) {
+        my ($rps, $band) = ($1, $2);
+        $record->{rps} = $rps;
+        $record->{band} = $band;
+        #warn "rps: $rps, bandwidth: $band\n";
+        next;
+    }
+
+    if (/^requests: .*?, (\d+) failed, (\d+) errored$/) {
+        my $failed = $1 + $2;
+        #warn "failed: $failed\n";
+        $record->{failed} = $failed;
+        next;
+    }
 }
 
 warn scalar(@records), " records found.\n";
+
 
