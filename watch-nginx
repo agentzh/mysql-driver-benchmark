@@ -14,6 +14,20 @@ cd logs/ || exit 1
 Filout="nginx-$here.$today-$now"
 echo $Filout
 
+pids=
+
+function cleanup {
+    kill $pids
+    sleep 1
+    kill -9 $pids
+    exit
+}
+
+trap cleanup SIGHUP SIGINT SIGTERM
+
+vmstat -n 1 >> $Filout &
+pids="$!"
+
 while [ 1 = 1 ]; do
 
     (echo ===; echo TIME `date +"%Y-%m-%d %H:%M:%S"`; free -m|grep '[0-9]'; \
@@ -26,6 +40,11 @@ while [ 1 = 1 ]; do
         now=$newmin
         Filout="nginx-$here.$today-$now"
         echo $Filout
+        kill $pids
+        sleep 0.2
+        kill -9 $pids
+        vmstat -n 1 >> $Filout &
+        pids="$!"
     fi
 done
 
