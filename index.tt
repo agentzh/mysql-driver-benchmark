@@ -26,6 +26,11 @@
         </tr>
 
         <tr>
+            <td><img src="cs-nginx.png"></td>
+            <td><img src="idle-nginx.png"></td>
+        </tr>
+
+        <tr>
             <td><img src="rss-mysql.png"></td>
             <td><img src="vsz-mysql.png"></td>
         </tr>
