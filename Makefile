@@ -25,6 +25,7 @@ pack:
 check:
 	@echo "=========== MySQL ==========="
 	-nice ps aux|grep mysqld|grep -v safe|grep -v grep
+	-nice ps -eLf|grep mysqld|grep -v safe|grep -v grep|wc -l
 	@echo "=========== Nginx ==========="
 	-nice ps aux|grep nginx|grep -v grep
 	@echo "=========== Watcher ========="
