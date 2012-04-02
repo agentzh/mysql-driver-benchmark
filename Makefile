@@ -9,7 +9,7 @@ name=logs-$(today)-$(now)
 all: ;
 
 clean:
-	rm -rf *.png *.csv
+	rm -rf *.png *.csv *.html
 
 bench-slow:
 	if [ -d logs-old/ ]; then rm -rf logs-old; fi
@@ -48,9 +48,10 @@ timewait:
 	nice netstat -nt|grep :8080|grep TIME_WAIT|wc -l
 
 upload-slow:
-	rsync -crv drizzle-slow-micro-lowess.png drizzle-slow-micro.png agentzh.org:~/www/agentzh/misc/nginx/bench/
+	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-slow-micro/
 
 gen-slow:
-	./parse-logs logs logs/slow.log > slow.csv || exit 1
-	R --no-save --slave < plot-slow.r --no-save -q || exit 1
+	./parse-logs logs logs/slow.log > slow.csv
+	R --no-save --slave < plot-slow.r --no-save -q
+	tpage --define title='ngx_drizzle/ngx_rds on Amazon EC2 Micro' --define subtitle='(All in a single instance, MySQL Query "select sleep(1)")' index.tt > slow.html
 

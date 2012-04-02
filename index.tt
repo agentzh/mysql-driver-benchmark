@@ -1,0 +1,30 @@
+<html>
+    <title>[% title %]</title>
+    <body>
+        <h1>[% title %]</h1>
+        <h2>[% subtitle %]</h2>
+        <table>
+
+        <tr>
+            <td><img src="rps-nginx.png"></td>
+            <td><img src="rps-lowess-nginx.png"></td>
+        </tr>
+
+        <tr>
+            <td><img src="rss-nginx.png"></td>
+            <td><img src="vsz-nginx.png"></td>
+        </tr>
+
+        <tr>
+            <td><img src="cpu-nginx.png"></td>
+            <td><img src="cpu-mysql.png"></td>
+        </tr>
+
+        <tr>
+            <td><img src="rss-mysql.png"></td>
+            <td><img src="vsz-mysql.png"></td>
+        </tr>
+
+        </table>
+    </body>
+</html>

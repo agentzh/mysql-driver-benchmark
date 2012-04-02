@@ -115,12 +115,12 @@ if ($work_dir =~ m{/$}) {
     chop $work_dir;
 }
 
-my @nginx_files = sort glob "$work_dir/nginx-*.[0-9]*-[0-9]*";
-
 my $begin_suffix = $records[0]{BEGIN}{suffix};
 my $end_suffix = $records[-1]{BEGIN}{suffix};
 
 warn "$begin_suffix <=> $end_suffix\n";
+
+my @nginx_files = sort glob "$work_dir/nginx-*.[0-9]*-[0-9]*";
 
 @nginx_files = grep {
         if (/\.([^.]+)$/) {
@@ -133,6 +133,7 @@ warn "$begin_suffix <=> $end_suffix\n";
     } @nginx_files;
 
 warn "nginx files: @nginx_files\n";
+
 
 my @nginx_stats;
 my $stat;
@@ -187,7 +188,72 @@ for my $file (@nginx_files) {
     }
 }
 
-#warn "nginx files: @nginx_files\n";
+my @mysql_files = sort glob "$work_dir/mysql-*.[0-9]*-[0-9]*";
+
+@mysql_files = grep {
+        if (/\.([^.]+)$/) {
+            my $s = $1;
+            #warn "testing suffix $s\n";
+            $s ge $begin_suffix && $s le $end_suffix
+        } else {
+            die;
+        }
+    } @mysql_files;
+
+warn "mysql files: @mysql_files\n";
+
+undef $stat;
+my @mysql_stats;
+for my $file (@mysql_files) {
+    if ($file =~ /\.([^.]+)$/) {
+        my $suffix = $1;
+
+        open my $in, $file or
+            die "Cannot open $file for reading: $!\n";
+
+        while (<$in>) {
+            if (/^===$/) {
+                if ($stat) {
+                    if (!defined $stat->{rss} && !defined $stat->{vsz}
+                        && !defined $stat->{cpu})
+                    {
+                        warn "WARNING: abandoned $stat->{time}\n";
+                        pop @mysql_stats;
+                    }
+                }
+
+                $stat = {};
+                push @mysql_stats, $stat;
+
+                next;
+            }
+
+            if (/^TIME (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})$/) {
+                my $time = $1;
+
+                #warn "time: $time\n";
+                $stat->{time} = $time;
+                next;
+            }
+
+            if (/^\S+ \s+ \d+ \s+ (\d+(?:\.\d+)?) \s+ \d+(?:\.\d+)? \s+
+                    (\d+) \s+ (\d+) \s+ .*? \/mysqld \s+ --/x)
+            {
+                my ($cpu, $vsz, $rss) = ($1, $2, $3);
+                warn "CPU: $cpu, VSZ: $vsz, RSS: $rss\n";
+                $stat->{cpu} = $cpu;
+                $stat->{vsz} = $vsz;
+                $stat->{rss} = $rss;
+            }
+        }
+
+        close $in;
+        #warn "suffix: $suffix";
+
+    } else {
+        die;
+    }
+}
 
 sub max {
     my ($a, $b) = @_;
@@ -220,9 +286,23 @@ for my $r (@records) {
         $r->{ngx_vsz} = max($r->{ngx_vsz}, $stat->{vsz}/1000);
         $r->{ngx_cpu} = max($r->{ngx_cpu}, $stat->{cpu});
     }
+
+    for my $stat (@mysql_stats) {
+        if ($stat->{time} le $begin) {
+            next;
+        }
+
+        if ($stat->{time} ge $end) {
+            last;
+        }
+
+        $r->{mysql_rss} = max($r->{ngx_rss}, $stat->{rss}/1000);
+        $r->{mysql_vsz} = max($r->{ngx_vsz}, $stat->{vsz}/1000);
+        $r->{mysql_cpu} = max($r->{ngx_cpu}, $stat->{cpu});
+    }
 }
 
-print "concurrency,rps,bandwidth,nginx_cpu,nginx_vsz,nginx_rss\n";
+print "concurrency,rps,bandwidth,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss\n";
 for my $r (@records) {
     if ($r->{failed}) {
         warn "WARNING: record skipped: concurrency $r->{con}: $r->{failed} failed.\n";
@@ -233,6 +313,7 @@ for my $r (@records) {
     my $end = $r->{END};
 
     print "$r->{con},$r->{rps},$r->{band},",
-        "$r->{ngx_cpu},$r->{ngx_vsz},$r->{ngx_rss}\n";
+        "$r->{ngx_cpu},$r->{ngx_vsz},$r->{ngx_rss},",
+        "$r->{mysql_cpu},$r->{mysql_vsz},$r->{mysql_rss}\n";
 }
 
