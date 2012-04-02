@@ -42,7 +42,10 @@
 [% or_ver %]
         <h2>nginx.conf</h1>
 <pre>
-[% INCLUDE $ngx_config | html %]
+[% INCLUDE $ngx_config | html -%]
 </pre>
+<h2>Report Generation Time</h2>
+[% time %]
+<p/>
     </body>
 </html>

@@ -59,5 +59,6 @@ gen-drizzle-slow:
 	    --define or_ver=1.0.11.28 \
 	    --define os='Basic Amazon Linux AMI (64-bit)' \
 	    --define ngx_config=ngx-drizzle-test/conf/nginx.conf \
+	    --define time="`date`" \
 	    index.tt > slow.html
 
