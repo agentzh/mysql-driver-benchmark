@@ -38,8 +38,10 @@
         </table>
         <h2>Operating System</h2>
 [% os %]
-        <h2>ngx_openresty</h2>
+        <h2>OpenResty Server</h2>
 [% or_ver %]
+        <h2>MySQL Server</h2>
+[% mysql_ver %]
         <h2>nginx.conf</h1>
 <pre>
 [% INCLUDE $ngx_config | html -%]

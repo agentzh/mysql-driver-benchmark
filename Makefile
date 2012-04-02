@@ -57,8 +57,9 @@ gen-drizzle-slow:
 	tpage --define title='ngx_drizzle + ngx_rds_json on Amazon EC2 Micro' \
 	    --define desc='All software runs in a single Micro instance.' \
 	    --define or_ver=1.0.11.28 \
-	    --define os='Basic Amazon Linux AMI (64-bit)' \
+	    --define os='Amazon Linux AMI release 2011.09 (x86_64)' \
 	    --define ngx_config=ngx-drizzle-test/conf/nginx.conf \
+	    --define mysql_ver=5.1.61 \
 	    --define time="`date`" \
 	    index.tt > slow.html
 
