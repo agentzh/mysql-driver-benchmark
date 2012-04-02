@@ -25,6 +25,11 @@
             <td><img src="vsz-mysql.png"></td>
         </tr>
 
+        <tr>
+            <td><img src="threads-mysql.png"></td>
+            <td><!-- <img src="vsz-mysql.png"> --></td>
+        </tr>
+
         </table>
     </body>
 </html>

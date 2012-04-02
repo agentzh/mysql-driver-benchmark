@@ -147,10 +147,10 @@ for my $file (@nginx_files) {
         while (<$in>) {
             if (/^===$/) {
                 if ($stat) {
-                    if (!defined $stat->{rss} && !defined $stat->{vsz}
-                        && !defined $stat->{cpu})
+                    if (!defined $stat->{rss} || !defined $stat->{vsz}
+                        || !defined $stat->{cpu})
                     {
-                        warn "WARNING: abandoned $stat->{time}\n";
+                        warn "WARNING: Data missing for Nginx stats\n";
                         pop @nginx_stats;
                     }
                 }
@@ -158,6 +158,10 @@ for my $file (@nginx_files) {
                 $stat = {};
                 push @nginx_stats, $stat;
 
+                next;
+            }
+
+            if (!$stat) {
                 next;
             }
 
@@ -177,6 +181,7 @@ for my $file (@nginx_files) {
                 $stat->{cpu} = $cpu;
                 $stat->{vsz} = $vsz;
                 $stat->{rss} = $rss;
+                next;
             }
         }
 
@@ -214,17 +219,21 @@ for my $file (@mysql_files) {
         while (<$in>) {
             if (/^===$/) {
                 if ($stat) {
-                    if (!defined $stat->{rss} && !defined $stat->{vsz}
-                        && !defined $stat->{cpu})
+                    if (!defined $stat->{rss} || !defined $stat->{vsz}
+                        || !defined $stat->{cpu} || !defined $stat->{threads})
                     {
-                        warn "WARNING: abandoned $stat->{time}\n";
-                        pop @mysql_stats;
+                        warn "WARNING: Data missing for MySQL stats\n";
+                        #pop @mysql_stats;
                     }
                 }
 
                 $stat = {};
                 push @mysql_stats, $stat;
 
+                next;
+            }
+
+            if (!$stat) {
                 next;
             }
 
@@ -240,10 +249,18 @@ for my $file (@mysql_files) {
                     (\d+) \s+ (\d+) \s+ .*? \/mysqld \s+ --/x)
             {
                 my ($cpu, $vsz, $rss) = ($1, $2, $3);
-                warn "CPU: $cpu, VSZ: $vsz, RSS: $rss\n";
+                #warn "CPU: $cpu, VSZ: $vsz, RSS: $rss\n";
                 $stat->{cpu} = $cpu;
                 $stat->{vsz} = $vsz;
                 $stat->{rss} = $rss;
+                next;
+            }
+
+            if (/^(\d+)$/) {
+                my $threads = $1;
+                #warn "threads: $threads\n";
+                $stat->{threads} = $threads;
+                next;
             }
         }
 
@@ -299,10 +316,11 @@ for my $r (@records) {
         $r->{mysql_rss} = max($r->{ngx_rss}, $stat->{rss}/1000);
         $r->{mysql_vsz} = max($r->{ngx_vsz}, $stat->{vsz}/1000);
         $r->{mysql_cpu} = max($r->{ngx_cpu}, $stat->{cpu});
+        $r->{mysql_threads} = max($r->{mysql_threads}, $stat->{threads});
     }
 }
 
-print "concurrency,rps,bandwidth,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss\n";
+print "concurrency,rps,bandwidth,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss,mysql_threads\n";
 for my $r (@records) {
     if ($r->{failed}) {
         warn "WARNING: record skipped: concurrency $r->{con}: $r->{failed} failed.\n";
@@ -314,6 +332,6 @@ for my $r (@records) {
 
     print "$r->{con},$r->{rps},$r->{band},",
         "$r->{ngx_cpu},$r->{ngx_vsz},$r->{ngx_rss},",
-        "$r->{mysql_cpu},$r->{mysql_vsz},$r->{mysql_rss}\n";
+        "$r->{mysql_cpu},$r->{mysql_vsz},$r->{mysql_rss},$r->{mysql_threads}\n";
 }
 
