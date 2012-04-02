@@ -1,8 +1,7 @@
 *~
 *.swp
 *.tar.gz
-logs/
-logs-old/
+logs*
 *.swo
 .*
 *.csv
