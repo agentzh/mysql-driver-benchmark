@@ -5,7 +5,9 @@ name=logs-$(today)-$(now)
 .PHONY: all clean bench-slow check pack \
 	start-drizzle start-drizzle-lua start-lua timewait \
 	upload-drizzle-slow gen-drizzle-slow \
-	upload-drizzle-lua-slow gen-drizzle-lua-slow
+	upload-drizzle-lua-slow gen-drizzle-lua-slow \
+	upload-lua-slow gen-lua-slow \
+	upload-drizzle-slow-small
 
 all: ;
 
@@ -53,8 +55,14 @@ timewait:
 upload-drizzle-slow:
 	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-slow-micro/
 
+upload-drizzle-slow-small:
+	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-slow-small/
+
 upload-drizzle-lua-slow:
 	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-lua-slow-micro/
+
+upload-lua-slow:
+	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/lua-slow-micro/
 
 gen-drizzle-slow:
 	./parse-logs logs logs/slow.log > slow.csv
@@ -76,6 +84,18 @@ gen-drizzle-lua-slow:
 	    --define or_ver=1.0.11.28 \
 	    --define os='Amazon Linux AMI release 2011.09 (x86_64)' \
 	    --define ngx_config=ngx-drizzle-lua-test/conf/nginx.conf \
+	    --define mysql_ver=5.1.61 \
+	    --define time="`date`" \
+	    index.tt > slow.html
+
+gen-lua-slow:
+	./parse-logs logs logs/slow.log > slow.csv
+	R --no-save --slave < plot.r --no-save -q --args slow.csv
+	tpage --define title='ngx_lua + lua-resty-mysql on Amazon EC2 Micro' \
+	    --define desc='All software runs in a single Micro instance.' \
+	    --define or_ver=1.0.11.28 \
+	    --define os='Amazon Linux AMI release 2011.09 (x86_64)' \
+	    --define ngx_config=ngx-lua-test/conf/nginx.conf \
 	    --define mysql_ver=5.1.61 \
 	    --define time="`date`" \
 	    index.tt > slow.html
