@@ -2,7 +2,7 @@
     <title>[% title %]</title>
     <body>
         <h1>[% title %]</h1>
-        <h2>[% subtitle %]</h2>
+        <p>[% desc %]</p>
         <table>
 
         <tr>
