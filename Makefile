@@ -48,11 +48,16 @@ start-lua:
 timewait:
 	nice netstat -nt|grep :8080|grep TIME_WAIT|wc -l
 
-upload-slow:
+upload-drizzle-slow:
 	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-slow-micro/
 
-gen-slow:
+gen-drizzle-slow:
 	./parse-logs logs logs/slow.log > slow.csv
 	R --no-save --slave < plot.r --no-save -q --args slow.csv
-	tpage --define title='ngx_drizzle + ngx_rds_json on Amazon EC2 Micro' --define desc='All software runs in a single Micro instance. The MySQL Query is "select sleep(1)".' index.tt > slow.html
+	tpage --define title='ngx_drizzle + ngx_rds_json on Amazon EC2 Micro' \
+	    --define desc='All software runs in a single Micro instance.' \
+	    --define or_ver=1.0.11.28 \
+	    --define os='Basic Amazon Linux AMI (64-bit)' \
+	    --define ngx_config=ngx-drizzle-test/conf/nginx.conf \
+	    index.tt > slow.html
 

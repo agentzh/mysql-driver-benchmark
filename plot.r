@@ -30,6 +30,12 @@ plot(data$con, data$throughput, xlab="concurrency", ylab="Throughput (KBytes per
 
 dev.off()
 
+png("free-nginx.png", pointsize = 16)
+
+plot(data$con, data$nginx_free, xlab="concurrency", ylab="Memory (MBytes)",
+    type="l", main="Nginx Machine Free Memory (-/+ buffers/cache)")
+
+dev.off()
 
 png("vsz-nginx.png", pointsize = 16)
 

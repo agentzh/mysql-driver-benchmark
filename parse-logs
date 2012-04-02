@@ -163,7 +163,7 @@ for my $file (@nginx_files) {
             if (/^===$/) {
                 if ($stat) {
                     if (!defined $stat->{rss} || !defined $stat->{vsz}
-                        || !defined $stat->{cpu})
+                        || !defined $stat->{cpu} || !defined $stat->{free})
                     {
                         warn "WARNING: Data missing for Nginx stats\n";
                         pop @nginx_stats;
@@ -197,6 +197,12 @@ for my $file (@nginx_files) {
                 $stat->{vsz} = $vsz;
                 $stat->{rss} = $rss;
                 next;
+            }
+
+            if (/^\-\/\+ buffers\/cache:\s+\d+\s+(\d+)/) {
+                my $free = $1;
+                #warn "free: $free\n";
+                $stat->{free} = $free;
             }
         }
 
@@ -300,6 +306,19 @@ sub max {
     return $a > $b ? $a : $b;
 }
 
+sub min {
+    my ($a, $b) = @_;
+    if (!defined $a) {
+        return $b;
+    }
+
+    if (!defined $b) {
+        return $a;
+    }
+
+    return $a < $b ? $a : $b;
+}
+
 for my $r (@records) {
     my $begin = $r->{BEGIN}{time};
     my $end = $r->{END}{time};
@@ -317,6 +336,7 @@ for my $r (@records) {
         $r->{ngx_rss} = max($r->{ngx_rss}, $stat->{rss}/1000);
         $r->{ngx_vsz} = max($r->{ngx_vsz}, $stat->{vsz}/1000);
         $r->{ngx_cpu} = max($r->{ngx_cpu}, $stat->{cpu});
+        $r->{ngx_free} = min($r->{ngx_free}, $stat->{free})
     }
 
     for my $stat (@mysql_stats) {
@@ -335,7 +355,7 @@ for my $r (@records) {
     }
 }
 
-print "concurrency,rps,time,throughput,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss,mysql_threads\n";
+print "concurrency,rps,time,throughput,nginx_free,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss,mysql_threads\n";
 for my $r (@records) {
     if ($r->{failed}) {
         warn "WARNING: record skipped: concurrency $r->{con}: $r->{failed} failed.\n";
@@ -348,7 +368,7 @@ for my $r (@records) {
     my $time = $r->{total_time} / $r->{total_reqs} * $r->{con};
 
     print "$r->{con},$r->{rps},$time,$r->{throughput},",
-        "$r->{ngx_cpu},$r->{ngx_vsz},$r->{ngx_rss},",
+        "$r->{ngx_free},$r->{ngx_cpu},$r->{ngx_vsz},$r->{ngx_rss},",
         "$r->{mysql_cpu},$r->{mysql_vsz},$r->{mysql_rss},$r->{mysql_threads}\n";
 }
 
