@@ -53,6 +53,6 @@ upload-slow:
 
 gen-slow:
 	./parse-logs logs logs/slow.log > slow.csv
-	R --no-save --slave < plot-slow.r --no-save -q
+	R --no-save --slave < plot.r --no-save -q --args slow.csv
 	tpage --define title='ngx_drizzle + ngx_rds_json on Amazon EC2 Micro' --define desc='All software runs in a single Micro instance. The MySQL Query is "select sleep(1)".' index.tt > slow.html
 
