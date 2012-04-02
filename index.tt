@@ -11,6 +11,11 @@
         </tr>
 
         <tr>
+            <td><img src="throughput-nginx.png"></td>
+            <td><img src="time-nginx.png"></td>
+        </tr>
+
+        <tr>
             <td><img src="rss-nginx.png"></td>
             <td><img src="vsz-nginx.png"></td>
         </tr>

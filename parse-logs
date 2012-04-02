@@ -57,8 +57,16 @@ while (<$main>) {
                 die "line $ln: rps not found";
             }
 
-            if (!defined $record->{band}) {
-                die "line $ln: bandwidth not found";
+            if (!defined $record->{total_time}) {
+                die "line $ln: total time not found";
+            }
+
+            if (!defined $record->{total_reqs}) {
+                die "line $ln: total requests not found";
+            }
+
+            if (!defined $record->{throughput}) {
+                die "line $ln: throughput not found";
             }
         }
 
@@ -93,17 +101,24 @@ while (<$main>) {
         next;
     }
 
-    if (/^finished in .*?, (\d+) req\/s, (\d+) kbyte\/s$/) {
-        my ($rps, $band) = ($1, $2);
+    if (/^finished in (\d+) sec, (\d+) millisec and (\d+) microsec, (\d+) req\/s, (\d+) kbyte\/s$/) {
+        my ($sec, $millisec, $microsec, $rps, $throughput) = ($1, $2, $3, $4, $5);
+
+        my $total_time = $sec * 1000 + $millisec + $microsec/1000;
+
         $record->{rps} = $rps;
-        $record->{band} = $band;
-        #warn "rps: $rps, bandwidth: $band\n";
+        $record->{throughput} = $throughput;
+        $record->{total_time} = $total_time;
+
+        #warn "rps: $rps, throughput: $throughput\n";
         next;
     }
 
-    if (/^requests: .*?, (\d+) failed, (\d+) errored$/) {
-        my $failed = $1 + $2;
+    if (/^requests: (\d+) total, .*?, (\d+) failed, (\d+) errored$/) {
+        my $total = $1;
+        my $failed = $2 + $3;
         #warn "failed: $failed\n";
+        $record->{total_reqs} = $total;
         $record->{failed} = $failed;
         next;
     }
@@ -320,7 +335,7 @@ for my $r (@records) {
     }
 }
 
-print "concurrency,rps,bandwidth,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss,mysql_threads\n";
+print "concurrency,rps,time,throughput,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss,mysql_threads\n";
 for my $r (@records) {
     if ($r->{failed}) {
         warn "WARNING: record skipped: concurrency $r->{con}: $r->{failed} failed.\n";
@@ -330,7 +345,9 @@ for my $r (@records) {
     my $begin = $r->{BEGIN};
     my $end = $r->{END};
 
-    print "$r->{con},$r->{rps},$r->{band},",
+    my $time = $r->{total_time} / $r->{total_reqs} * $r->{con};
+
+    print "$r->{con},$r->{rps},$time,$r->{throughput},",
         "$r->{ngx_cpu},$r->{ngx_vsz},$r->{ngx_rss},",
         "$r->{mysql_cpu},$r->{mysql_vsz},$r->{mysql_rss},$r->{mysql_threads}\n";
 }
