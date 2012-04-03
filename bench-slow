@@ -23,8 +23,8 @@ trap cleanup SIGHUP SIGINT SIGTERM
 #./watch-mysql &
 #pids="$pids $!"
 
-#./watch-nginx &
-#pids="$pids $!"
+./watch-nginx &
+pids="$pids $!"
 
 #./watch-weighttp &
 #pids="$pids $!"

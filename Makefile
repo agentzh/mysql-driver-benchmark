@@ -38,6 +38,7 @@ check:
 	@echo
 	@echo "=========== TIME_WAIT ========"
 	-nice netstat -nt|grep :8080|grep TIME_WAIT|wc -l
+	-nice netstat -nt|grep :3306|grep TIME_WAIT|wc -l
 
 start-drizzle:
 	cd ngx-drizzle-test && ./start
