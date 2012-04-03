@@ -102,3 +102,17 @@ plot(data$con, data$mysql_threads, xlab="concurrency", ylab="Threads",
 
 dev.off()
 
+png("cs-mysql.png", pointsize = 16)
+
+plot(data$con, data$mysql_cs, xlab="concurrency", ylab="Context Switches Per Second",
+    type="l", main="MySQL Machine Context Switch")
+
+dev.off()
+
+png("idle-mysql.png", pointsize = 16)
+
+plot(data$con, data$mysql_idle, xlab="concurrency", ylab="Percentage",
+    type="l", main="MySQL Machine CPU Idle Time")
+
+dev.off()
+

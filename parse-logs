@@ -36,6 +36,9 @@ while (<$main>) {
     if (/^===$/) {
         if ($record) {
             my $ln = $record->{line};
+            if (!$ln) {
+                die "$.: no line found";
+            }
 
             if (!$record->{BEGIN}) {
                 die "line $ln: BEGIN time not found";
@@ -70,7 +73,7 @@ while (<$main>) {
             }
         }
 
-        $record = {};
+        $record = { line => $. };
         push @records, $record;
         next;
     }
@@ -147,8 +150,7 @@ my @nginx_files = sort glob "$work_dir/nginx-*.[0-9]*-[0-9]*";
         }
     } @nginx_files;
 
-warn "nginx files: @nginx_files\n";
-
+#warn "nginx files: @nginx_files\n";
 
 my @nginx_stats;
 my $stat;
@@ -163,7 +165,8 @@ for my $file (@nginx_files) {
             if (/^===$/) {
                 if ($stat) {
                     if (!defined $stat->{rss} || !defined $stat->{vsz}
-                        || !defined $stat->{cpu} || !defined $stat->{free})
+                        || !defined $stat->{cpu} || !defined $stat->{free}
+                        || !defined $stat->{idle} || !defined $stat->{cs})
                     {
                         warn "WARNING: Data missing for Nginx stats\n";
                         pop @nginx_stats;
@@ -209,7 +212,7 @@ for my $file (@nginx_files) {
             if (/^\s* \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ (\d+) \s+ \d+ \s+ \d+ \s+ (\d+) \s+ \d+ \s+ \d+ \s*$/x) {
                 my $cs = $1;
                 my $idle = $2;
-                warn "context switch: $cs, idle time: $idle\n";
+                #warn "context switch: $cs, idle time: $idle\n";
                 $stat->{cs} = $cs;
                 $stat->{idle} = $idle;
                 next;
@@ -236,7 +239,7 @@ my @mysql_files = sort glob "$work_dir/mysql-*.[0-9]*-[0-9]*";
         }
     } @mysql_files;
 
-warn "mysql files: @mysql_files\n";
+#warn "mysql files: @mysql_files\n";
 
 undef $stat;
 my @mysql_stats;
@@ -251,9 +254,10 @@ for my $file (@mysql_files) {
             if (/^===$/) {
                 if ($stat) {
                     if (!defined $stat->{rss} || !defined $stat->{vsz}
-                        || !defined $stat->{cpu} || !defined $stat->{threads})
+                        || !defined $stat->{cpu} || !defined $stat->{threads}
+                        || !defined $stat->{idle} || !defined $stat->{cs})
                     {
-                        warn "WARNING: Data missing for MySQL stats\n";
+                        #warn "WARNING: Data missing for MySQL stats\n";
                         #pop @mysql_stats;
                     }
                 }
@@ -291,6 +295,15 @@ for my $file (@mysql_files) {
                 my $threads = $1;
                 #warn "threads: $threads\n";
                 $stat->{threads} = $threads;
+                next;
+            }
+
+            if (/^\s* \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ \d+ \s+ (\d+) \s+ \d+ \s+ \d+ \s+ (\d+) \s+ \d+ \s+ \d+ \s*$/x) {
+                my $cs = $1;
+                my $idle = $2;
+                #warn "context switch: $cs, idle time: $idle\n";
+                $stat->{cs} = $cs;
+                $stat->{idle} = $idle;
                 next;
             }
         }
@@ -360,14 +373,16 @@ for my $r (@records) {
             last;
         }
 
-        $r->{mysql_rss} = max($r->{ngx_rss}, $stat->{rss}/1000);
-        $r->{mysql_vsz} = max($r->{ngx_vsz}, $stat->{vsz}/1000);
-        $r->{mysql_cpu} = max($r->{ngx_cpu}, $stat->{cpu});
+        $r->{mysql_rss} = max($r->{mysql_rss}, $stat->{rss}/1000);
+        $r->{mysql_vsz} = max($r->{mysql_vsz}, $stat->{vsz}/1000);
+        $r->{mysql_cpu} = max($r->{mysql_cpu}, $stat->{cpu});
         $r->{mysql_threads} = max($r->{mysql_threads}, $stat->{threads});
+        $r->{mysql_idle} = min($r->{mysql_idle}, $stat->{idle});
+        $r->{mysql_cs} = max($r->{mysql_cs}, $stat->{cs});
     }
 }
 
-print "concurrency,rps,time,throughput,nginx_idle,nginx_cs,nginx_free,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss,mysql_threads\n";
+print "concurrency,rps,time,throughput,nginx_idle,nginx_cs,nginx_free,nginx_cpu,nginx_vsz,nginx_rss,mysql_cpu,mysql_vsz,mysql_rss,mysql_threads,mysql_idle,mysql_cs\n";
 for my $r (@records) {
     if ($r->{failed}) {
         warn "WARNING: record skipped: concurrency $r->{con}: $r->{failed} failed.\n";
@@ -377,11 +392,16 @@ for my $r (@records) {
     my $begin = $r->{BEGIN};
     my $end = $r->{END};
 
+    if ($r->{total_reqs} == 0) {
+        next;
+    }
+
     my $time = $r->{total_time} / $r->{total_reqs} * $r->{con};
 
     print "$r->{con},$r->{rps},$time,$r->{throughput},",
         "$r->{ngx_idle},$r->{ngx_cs},",
         "$r->{ngx_free},$r->{ngx_cpu},$r->{ngx_vsz},$r->{ngx_rss},",
-        "$r->{mysql_cpu},$r->{mysql_vsz},$r->{mysql_rss},$r->{mysql_threads}\n";
+        "$r->{mysql_cpu},$r->{mysql_vsz},$r->{mysql_rss},$r->{mysql_threads},",
+        "$r->{mysql_idle},$r->{mysql_cs}\n";
 }
 

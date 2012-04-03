@@ -40,6 +40,11 @@
             <td><img src="cpu-mysql.png"></td>
         </tr>
 
+        <tr>
+            <td><img src="cs-mysql.png"></td>
+            <td><img src="idle-mysql.png"></td>
+        </tr>
+
         </table>
         <h2>Operating System</h2>
 [% os %]

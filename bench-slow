@@ -32,14 +32,15 @@ trap cleanup SIGHUP SIGINT SIGTERM
 c=20
 total=0
 while [ $c -le 1000 ]; do
-    n=$((c * 5))
+    n=$((c * 3))
     total=$((total + n))
 
-    if [ $total -ge 40000 ]; then
-        sleep 10
+    if [ $total -ge 20000 ]; then
+        echo "INFO: sleeping 15 sec..."
+        sleep 15
         total=0
     else
-        sleep 0.5
+        sleep 1;
     fi
 
     echo ===
