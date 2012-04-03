@@ -10,22 +10,24 @@ fi
 pids=
 
 function cleanup {
-    kill $pids
-    sleep 1
-    kill -9 $pids
-    exit
+    if [ -n "$pids" ]; then
+        kill $pids
+        sleep 1
+        kill -9 $pids
+        exit
+    fi
 }
 
 trap cleanup SIGHUP SIGINT SIGTERM
 
-./watch-mysql &
-pids="$pids $!"
+#./watch-mysql &
+#pids="$pids $!"
 
-./watch-nginx &
-pids="$pids $!"
+#./watch-nginx &
+#pids="$pids $!"
 
-./watch-weighttp &
-pids="$pids $!"
+#./watch-weighttp &
+#pids="$pids $!"
 
 c=20
 total=0
@@ -47,15 +49,16 @@ while [ $c -le 1000 ]; do
     c=$((c + 20))
 done
 
-sleep 1
+if [ -n "$pids" ]; then
 
-echo killing $pids
-kill $pids
+    echo killing $pids
+    kill $pids
 
-sleep 1
+    sleep 0.3
 
-echo killing $pids with force
-kill -9 $pids
+    echo killing $pids with force
+    kill -9 $pids
 
-ps aux|grep watch|grep -v grep
+    ps aux|grep watch|grep -v grep
+fi
 

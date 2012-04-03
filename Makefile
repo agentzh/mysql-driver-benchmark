@@ -53,22 +53,22 @@ timewait:
 	nice netstat -nt|grep :3306|grep TIME_WAIT|wc -l
 
 upload-drizzle-slow:
-	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-slow-micro/
+	rsync -crv *.csv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-slow-micro/
 
 upload-drizzle-slow-small:
-	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-slow-small/
+	rsync -crv *.csv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-slow-small/
 
 upload-drizzle-lua-slow-small:
-	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-lua-slow-small/
+	rsync -crv *.csv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-lua-slow-small/
 
 upload-drizzle-lua-slow:
-	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-lua-slow-micro/
+	rsync -crv *.csv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/drizzle-lua-slow-micro/
 
 upload-lua-slow:
-	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/lua-slow-micro/
+	rsync -crv *.csv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/lua-slow-micro/
 
 upload-lua-slow-small:
-	rsync -crv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/lua-slow-small/
+	rsync -crv *.csv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/lua-slow-small/
 
 gen-drizzle-slow:
 	./parse-logs logs logs/slow.log > slow.csv
