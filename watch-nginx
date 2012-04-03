@@ -12,15 +12,17 @@ fi
 cd logs/ || exit 1
 
 Filout="nginx-$here.$today-$now"
-echo $Filout
+echo "logs/$Filout"
 
 pids=
 
 function cleanup {
-    kill $pids
-    sleep 1
-    kill -9 $pids
-    exit
+    if [ -n "$pids" ]; then
+        kill $pids
+        sleep 0.3
+        kill -9 $pids > /dev/null 2>&1
+        exit
+    fi
 }
 
 trap cleanup SIGHUP SIGINT SIGTERM
@@ -39,10 +41,12 @@ while [ 1 = 1 ]; do
     if [ "$now" != "$newmin" ]; then
         now=$newmin
         Filout="nginx-$here.$today-$now"
-        echo $Filout
+        echo "logs/$Filout"
+
         kill $pids
         sleep 0.2
-        kill -9 $pids
+        kill -9 $pids > /dev/null 2>&1
+
         vmstat -n 1 >> $Filout &
         pids="$!"
     fi

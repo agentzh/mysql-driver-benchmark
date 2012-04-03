@@ -12,7 +12,23 @@ fi
 cd logs/ || exit 1
 
 Filout="mysql-$here.$today-$now"
-echo $Filout
+echo "logs/$Filout"
+
+pids=
+
+function cleanup {
+    if [ -n "$pids" ]; then
+        kill $pids
+        sleep 0.2
+        kill -9 $pids > /dev/null 2>&1
+        exit
+    fi
+}
+
+trap cleanup SIGHUP SIGINT SIGTERM
+
+vmstat -n 1 >> $Filout &
+pids="$!"
 
 while [ 1 = 1 ]; do
 
@@ -26,7 +42,14 @@ while [ 1 = 1 ]; do
     if [ "$now" != "$newmin" ]; then
         now=$newmin
         Filout="mysql-$here.$today-$now"
-        echo $Filout
+        echo "logs/$Filout"
+
+        kill $pids
+        sleep 0.2
+        kill -9 $pids > /dev/null 2>&1
+
+        vmstat -n 1 >> $Filout &
+        pids="$!"
     fi
 done
 

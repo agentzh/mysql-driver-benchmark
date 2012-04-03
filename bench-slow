@@ -12,7 +12,7 @@ pids=
 function cleanup {
     if [ -n "$pids" ]; then
         kill $pids
-        sleep 1
+        sleep 0.3
         kill -9 $pids
         exit
     fi
@@ -57,7 +57,7 @@ if [ -n "$pids" ]; then
     sleep 0.3
 
     echo killing $pids with force
-    kill -9 $pids
+    kill -9 $pids > /dev/null 2>&1
 
     ps aux|grep watch|grep -v grep
 fi
