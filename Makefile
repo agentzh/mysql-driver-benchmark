@@ -34,7 +34,7 @@ check:
 	@echo "=========== Watcher ========="
 	-nice ps aux|grep watch-|grep -v grep
 	@echo "=========== API ============="
-	-nice curl localhost:8080/t
+	-nice curl web:8080/t
 	@echo
 	@echo "=========== TIME_WAIT ========"
 	-nice netstat -nt|grep :8080|grep TIME_WAIT|wc -l

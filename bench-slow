@@ -1,6 +1,6 @@
 #!/bin/bash
 
-uri=http://127.0.0.1:8080/t
+uri=http://web:8080/t
 curl -s -i $uri
 
 if [ ! -d logs/ ]; then
@@ -14,8 +14,8 @@ function cleanup {
         kill $pids
         sleep 0.3
         kill -9 $pids
-        exit
     fi
+    exit
 }
 
 trap cleanup SIGHUP SIGINT SIGTERM
@@ -23,8 +23,8 @@ trap cleanup SIGHUP SIGINT SIGTERM
 #./watch-mysql &
 #pids="$pids $!"
 
-./watch-nginx &
-pids="$pids $!"
+#./watch-nginx &
+#pids="$pids $!"
 
 #./watch-weighttp &
 #pids="$pids $!"
