@@ -7,7 +7,7 @@ $nodes = array(
     "127.0.0.1"
 );
 
-$i = rand(0, count($nodes));
+$i = rand(0, count($nodes) - 1);
 #echo $i;
 
 $link = mysql_connect($nodes[$i], 'ngx_test', 'ngx_test')
