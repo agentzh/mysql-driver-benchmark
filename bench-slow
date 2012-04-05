@@ -20,16 +20,16 @@ function cleanup {
 
 trap cleanup SIGHUP SIGINT SIGTERM
 
-./watch-mysql &
-pids="$pids $!"
+#./watch-mysql &
+#pids="$pids $!"
 
-./watch-nginx &
-pids="$pids $!"
+#./watch-nginx &
+#pids="$pids $!"
 
 #./watch-weighttp &
 #pids="$pids $!"
 
-c=400
+c=50
 total=0
 while [ $c -le 2000 ]; do
     n=$((c * 4))
