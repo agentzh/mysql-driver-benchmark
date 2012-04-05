@@ -1,5 +1,16 @@
 <?php
-$link = mysql_connect('127.0.0.1', 'ngx_test', 'ngx_test')
+
+$nodes = array(
+    "127.0.0.1",
+    "127.0.0.1",
+    "127.0.0.1",
+    "127.0.0.1"
+);
+
+$i = rand(0, count($nodes));
+#echo $i;
+
+$link = mysql_connect($nodes[$i], 'ngx_test', 'ngx_test')
     or die('Could not connect: ' . mysql_error());
 #echo 'Connected successfully';
 mysql_select_db('ngx_test') or die('Could not select database');
