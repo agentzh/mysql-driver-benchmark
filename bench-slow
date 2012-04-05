@@ -40,7 +40,7 @@ while [ $c -le 2000 ]; do
         sleep 15
         total=0
     else
-        sleep 15;
+        sleep 10;
     fi
 
     echo ===
