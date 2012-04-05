@@ -13,7 +13,7 @@ $i = rand(0, count($nodes));
 $link = mysql_connect($nodes[$i], 'ngx_test', 'ngx_test')
     or die('Could not connect: ' . mysql_error());
 #echo 'Connected successfully';
-mysql_select_db('ngx_test') or die('Could not select database');
+mysql_select_db('world') or die('Could not select database');
 
 // Performing SQL query
 $query = 'SELECT sleep(1)';
