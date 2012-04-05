@@ -8,7 +8,7 @@ $nodes = array(
 );
 
 $i = rand(0, count($nodes) - 1);
-echo $i;
+#echo $i;
 
 $link = mysql_connect($nodes[$i], 'ngx_test', 'ngx_test')
     or die('Could not connect: ' . mysql_error());
@@ -16,7 +16,8 @@ $link = mysql_connect($nodes[$i], 'ngx_test', 'ngx_test')
 mysql_select_db('world') or die('Could not select database');
 
 // Performing SQL query
-$query = 'SELECT sleep(1)';
+// $query = 'SELECT sleep(1)';
+$query = "select * from City order by ID limit 1"
 $result = mysql_query($query) or die('Query failed: ' . mysql_error());
 
 $lines = array();
