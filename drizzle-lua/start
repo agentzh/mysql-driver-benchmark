@@ -1,6 +1,8 @@
 #!/bin/bash
 
-nginx_bin=/opt/openresty-drizzle-lua/nginx/sbin/nginx
+nginx_bin=/usr/local/openresty/nginx/sbin/nginx
+
+mkdir -p logs
 
 if [ -f logs/nginx.pid ]; then
     pid=`cat logs/nginx.pid`
