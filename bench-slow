@@ -20,34 +20,34 @@ function cleanup {
 
 trap cleanup SIGHUP SIGINT SIGTERM
 
-#./watch-mysql &
-#pids="$pids $!"
+./watch-mysql &
+pids="$pids $!"
 
-#./watch-nginx &
-#pids="$pids $!"
+./watch-nginx &
+pids="$pids $!"
 
 #./watch-weighttp &
 #pids="$pids $!"
 
-c=20
+c=400
 total=0
-while [ $c -le 1000 ]; do
-    n=$((c * 3))
+while [ $c -le 2000 ]; do
+    n=$((c * 4))
     total=$((total + n))
 
-    if [ $total -ge 20000 ]; then
+    if [ $total -ge 10000 ]; then
         echo "INFO: sleeping 15 sec..."
         sleep 15
         total=0
     else
-        sleep 1;
+        sleep 15;
     fi
 
     echo ===
     echo BEGIN `date +"%Y-%m-%d %H:%M:%S"`
     weighttp -k -c$c -n$n $uri
     echo END `date +"%Y-%m-%d %H:%M:%S"`
-    c=$((c + 20))
+    c=$((c + 50))
 done
 
 if [ -n "$pids" ]; then
