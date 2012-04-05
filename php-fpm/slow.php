@@ -8,7 +8,7 @@ $nodes = array(
 );
 
 $i = rand(0, count($nodes));
-#echo $i;
+echo $i;
 
 $link = mysql_connect($nodes[$i], 'ngx_test', 'ngx_test')
     or die('Could not connect: ' . mysql_error());
