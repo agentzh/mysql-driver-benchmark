@@ -71,6 +71,9 @@ upload-lua-slow:
 upload-lua-slow-small:
 	rsync -crv *.csv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/lua-slow-small/
 
+upload-lua-slow-medium:
+	rsync -crv *.csv *.png *.html agentzh.org:~/www/agentzh/misc/nginx/bench/lua-slow-medium/
+
 gen-drizzle-slow:
 	./parse-logs logs logs/slow.log > slow.csv
 	R --no-save --slave < plot.r --no-save -q --args slow.csv
@@ -133,7 +136,6 @@ gen-drizzle-lua-slow-small:
 
 gen-lua-slow-small:
 	./parse-logs logs logs/slow.log > slow.csv
-	R --no-save --slave < plot.r --no-save -q --args slow.csv
 	tpage --define title='ngx_lua + lua-resty-mysql on Amazon EC2 Small' \
 	    --define desc='All software runs in a single Small instance.' \
 	    --define or_ver=1.0.11.28 \
@@ -142,4 +144,5 @@ gen-lua-slow-small:
 	    --define mysql_ver=5.1.61 \
 	    --define time="`date`" \
 	    index.tt > slow.html
+	R --no-save --slave < plot.r --no-save -q --args slow.csv
 
