@@ -29,9 +29,9 @@ trap cleanup SIGHUP SIGINT SIGTERM
 #./watch-weighttp &
 #pids="$pids $!"
 
-c=40
+c=20
 total=0
-while [ $c -le 950 ]; do
+while [ $c -le 940 ]; do
     n=$((c * 4))
     total=$((total + n))
 
@@ -47,7 +47,7 @@ while [ $c -le 950 ]; do
     echo BEGIN `date +"%Y-%m-%d %H:%M:%S"`
     weighttp -k -c$c -n$n $uri
     echo END `date +"%Y-%m-%d %H:%M:%S"`
-    c=$((c + 40))
+    c=$((c + 20))
 done
 
 if [ -n "$pids" ]; then
