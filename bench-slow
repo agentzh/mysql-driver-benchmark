@@ -34,7 +34,7 @@ c=5
 total=0
 while [ $c -le 180 ]; do
     #n=$((c * 5))
-    n=1000
+    n=500
     total=$((total + n))
 
     if [ $total -ge 10000 ]; then
