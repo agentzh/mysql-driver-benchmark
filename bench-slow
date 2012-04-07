@@ -34,7 +34,7 @@ c=5
 total=0
 while [ $c -le 180 ]; do
     #n=$((c * 5))
-    n=2000
+    n=25000
 
     #if [ $c -le 80 ]; then
         #n=80
