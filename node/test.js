@@ -96,7 +96,7 @@ http.createServer(function (req, res) {
         //var query = "select sleep(1)"
         //var query = "select * from test.comments order by id desc limit 1"
         //var query = "select * from test.comments order by id desc" // limit 1"
-        var query = "select * from ngx_test.City order by ID limit 1000" // limit 1"
+        var query = "select * from City order by ID limit 1000" // limit 1"
         client.query(query, [], function(err, rows, fields) {
             // return object back to pool
               if(err) {
