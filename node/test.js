@@ -5,7 +5,7 @@ var pool1 = poolModule.Pool({
     create   : function(callback) {
         var Client = require('mysql').Client;
         var c = new Client();
-        c.host = "10.211.162.185";
+        c.host = "mysql01";
         c.user     = 'ngx_test';
         c.password = 'ngx_test';
         c.database = 'world';
@@ -26,7 +26,7 @@ var pool2 = poolModule.Pool({
     create   : function(callback) {
         var Client = require('mysql').Client;
         var c = new Client();
-        c.host = "10.211.93.139";
+        c.host = "mysql02";
         c.user     = 'ngx_test';
         c.password = 'ngx_test';
         c.database = 'world';
@@ -47,7 +47,7 @@ var pool3 = poolModule.Pool({
     create   : function(callback) {
         var Client = require('mysql').Client;
         var c = new Client();
-        c.host = "10.192.15.221";
+        c.host = "mysql03";
         c.user     = 'ngx_test';
         c.password = 'ngx_test';
         c.database = 'world';
@@ -68,7 +68,7 @@ var pool4 = poolModule.Pool({
     create   : function(callback) {
         var Client = require('mysql').Client;
         var c = new Client();
-        c.host = "10.210.187.58";
+        c.host = "mysql04";
         c.user     = 'ngx_test';
         c.password = 'ngx_test';
         c.database = 'world';
