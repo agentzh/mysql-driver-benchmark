@@ -169,7 +169,7 @@ for my $file (@nginx_files) {
                         || !defined $stat->{idle} || !defined $stat->{cs})
                     {
                         warn "WARNING: Data missing for Nginx stats\n";
-                        pop @nginx_stats;
+                        #pop @nginx_stats;
                     }
                 }
 
@@ -195,7 +195,7 @@ for my $file (@nginx_files) {
                     (\d+) \s+ (\d+) \s+ .*? nginx:\ worker\ process /x)
             {
                 my ($cpu, $vsz, $rss) = ($1, $2, $3);
-                #warn "CPU: $cpu, VSZ: $vsz, RSS: $rss\n";
+                warn "CPU: $cpu, VSZ: $vsz, RSS: $rss\n";
                 $stat->{cpu} = $cpu;
                 $stat->{vsz} = $vsz;
                 $stat->{rss} = $rss;
@@ -356,8 +356,8 @@ for my $r (@records) {
             last;
         }
 
-        $r->{ngx_rss} = max($r->{ngx_rss}, $stat->{rss}/1000);
-        $r->{ngx_vsz} = max($r->{ngx_vsz}, $stat->{vsz}/1000);
+        $r->{ngx_rss} = max($r->{ngx_rss}, $stat->{rss} ? $stat->{rss}/1000 : undef);
+        $r->{ngx_vsz} = max($r->{ngx_vsz}, $stat->{vsz} ? $stat->{vsz}/1000 : undef);
         $r->{ngx_cpu} = max($r->{ngx_cpu}, $stat->{cpu});
         $r->{ngx_free} = min($r->{ngx_free}, $stat->{free});
         $r->{ngx_idle} = min($r->{ngx_idle}, $stat->{idle});
@@ -394,6 +394,18 @@ for my $r (@records) {
 
     if ($r->{total_reqs} == 0) {
         next;
+    }
+
+    if (!defined $r->{ngx_cpu}) {
+        $r->{ngx_cpu} = "";
+    }
+
+    if (!defined $r->{ngx_rss}) {
+        $r->{ngx_rss} = "";
+    }
+
+    if (!defined $r->{ngx_vsz}) {
+        $r->{ngx_vsz} = "";
     }
 
     my $time = $r->{total_time} / $r->{total_reqs} * $r->{con};
