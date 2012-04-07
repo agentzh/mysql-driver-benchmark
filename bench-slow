@@ -34,13 +34,13 @@ c=5
 total=0
 while [ $c -le 180 ]; do
     #n=$((c * 5))
-    #n=500
+    n=2000
 
-    if [ $c -le 80 ]; then
-        n=80
-    else
-        n=$c
-    fi
+    #if [ $c -le 80 ]; then
+        #n=80
+    #else
+        #n=$c
+    #fi
 
     total=$((total + n))
 
