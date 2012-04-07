@@ -7,3 +7,4 @@ logs*
 *.csv
 *.png
 *.html
+node/node_modules/
