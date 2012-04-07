@@ -155,3 +155,5 @@ gnu: slow-cs slow-idle slow-free \
 gnu-upload: gnu
 	rsync -cvr small-*.png small-*.gnu slow-*.png slow-*.gnu agentzh.org:~/www/agentzh/misc/nginx/bench/
 
+gen: gen-lua-slow-small
+

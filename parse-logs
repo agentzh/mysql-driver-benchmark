@@ -195,7 +195,7 @@ for my $file (@nginx_files) {
                     (\d+) \s+ (\d+) \s+ .*? nginx:\ worker\ process /x)
             {
                 my ($cpu, $vsz, $rss) = ($1, $2, $3);
-                warn "CPU: $cpu, VSZ: $vsz, RSS: $rss\n";
+                #warn "CPU: $cpu, VSZ: $vsz, RSS: $rss\n";
                 $stat->{cpu} = $cpu;
                 $stat->{vsz} = $vsz;
                 $stat->{rss} = $rss;
@@ -386,7 +386,7 @@ print "concurrency,rps,time,throughput,nginx_idle,nginx_cs,nginx_free,nginx_cpu,
 for my $r (@records) {
     if ($r->{failed}) {
         warn "WARNING: record skipped: concurrency $r->{con}: $r->{failed} failed.\n";
-        #next;
+        next;
     }
 
     my $begin = $r->{BEGIN};
@@ -406,6 +406,14 @@ for my $r (@records) {
 
     if (!defined $r->{ngx_vsz}) {
         $r->{ngx_vsz} = "";
+    }
+
+    if (!defined $r->{ngx_free}) {
+        $r->{ngx_free} = "";
+    }
+
+    if (!defined $r->{throughput}) {
+        $r->{throughput} = "";
     }
 
     my $time = $r->{total_time} / $r->{total_reqs} * $r->{con};
