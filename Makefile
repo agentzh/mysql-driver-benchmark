@@ -147,13 +147,14 @@ gen-lua-slow-small:
 	R --no-save --slave < plot.r --no-save -q --args slow.csv
 
 gnu: slow-cs slow-idle slow-free \
-    small-rps small-cs small-idle
+    small-rps small-cs small-idle \
+    big-cs big-rps
 
 %: %.gnu
 	gnuplot $<
 
 gnu-upload: gnu
-	rsync -cvr small-*.png small-*.gnu slow-*.png slow-*.gnu agentzh.org:~/www/agentzh/misc/nginx/bench/
+	rsync -cvr big-*.png small-*.png small-*.gnu slow-*.png slow-*.gnu agentzh.org:~/www/agentzh/misc/nginx/bench/
 
 gen: gen-lua-slow-small
 
