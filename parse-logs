@@ -386,7 +386,7 @@ print "concurrency,rps,time,throughput,nginx_idle,nginx_cs,nginx_free,nginx_cpu,
 for my $r (@records) {
     if ($r->{failed}) {
         warn "WARNING: record skipped: concurrency $r->{con}: $r->{failed} failed.\n";
-        next;
+        #next;
     }
 
     my $begin = $r->{BEGIN};

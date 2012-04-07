@@ -12,16 +12,16 @@ set ytics add ("" 120)
 
 set output "slow-idle1.png"
 
-plot "php-fpm-slow/slow.csv" using 1:5 with lines title "php-fpm + php-mysql" lw 2
+plot "php-fpm-slow2/slow.csv" using 1:5 with lines title "php-fpm + php-mysql" lw 2
 
 set output "slow-idle2.png"
 
-plot "php-fpm-slow/slow.csv" using 1:5 with lines title "php-fpm + php-mysql" lw 2, \
+plot "php-fpm-slow2/slow.csv" using 1:5 with lines title "php-fpm + php-mysql" lw 2, \
     "drizzle-slow/slow.csv" using 1:5 with lines title "ngx_drizzle + ngx_rds_json" lw 2
 
 set output "slow-idle3.png"
 
-plot "php-fpm-slow/slow.csv" using 1:5 with lines title "php-fpm + php-mysql" lw 2, \
+plot "php-fpm-slow2/slow.csv" using 1:5 with lines title "php-fpm + php-mysql" lw 2, \
     "drizzle-slow/slow.csv" using 1:5 with lines title "ngx_drizzle + ngx_rds_json" lw 2, \
     "lua-slow/slow.csv" using 1:5 with lines title "ngx_lua + lua-resty-mysql" lw 2
 
