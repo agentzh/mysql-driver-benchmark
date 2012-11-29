@@ -42,3 +42,13 @@ plot "php-fpm-small/slow.csv" using 1:2 with lines title "php-fpm + php-mysql" l
     "lua-small/slow.csv" using 1:2 with lines title "ngx_lua + lua-resty-mysql" lw 2, \
     "node-small/slow.csv" using 1:2 with lines title "nodejs + node-mysql + node-generic-pool" lw 2
 
+set yrange [0:8500]
+set output "small-rps6.png"
+
+plot "php-fpm-small/slow.csv" using 1:2 with lines title "php-fpm + php-mysql" lw 2, \
+    "drizzle-small/slow.csv" using 1:2 with lines title "ngx_drizzle + ngx_rds_json" lw 2, \
+    "drizzle-lua-small/slow.csv" using 1:2 with lines title "ngx_drizzle + ngx_lua" lw 2, \
+    "lua-small/slow.csv" using 1:2 with lines title "ngx_lua + lua-resty-mysql" lw 2, \
+    "node-small/slow.csv" using 1:2 with lines title "nodejs + node-mysql + node-generic-pool" lw 2, \
+    "srcache-small/slow.csv" using 1:2 with lines title "ngx_srcache + ngx_memc" lw 2
+
